@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../config/firebase";
+import { db, auth } from "../config/firebase";
 import "../styles/itemDetalhes.css";
 import logo from "../assets/banner.png";
 import Button from "../componentes/ui/Button";
+import { getUsuario } from "../services/authService";
+import { criarNotificacao } from "../config/notificacoes";
 
 export default function ItemDetalhes() {
   const { id } = useParams();
@@ -24,6 +26,7 @@ export default function ItemDetalhes() {
   const [motivo, setMotivo] = useState("");
   const [mensagemD, setMensagemD] = useState("");
 
+  // ---------------- CARREGAR ITEM ----------------
   useEffect(() => {
     async function carregar() {
       try {
@@ -36,10 +39,8 @@ export default function ItemDetalhes() {
         }
 
         setData({ id: snap.id, ...snap.data() });
-
       } catch (error) {
         console.error("Erro ao carregar item:", error);
-        alert("Erro ao carregar item.");
       } finally {
         setLoading(false);
       }
@@ -47,6 +48,72 @@ export default function ItemDetalhes() {
 
     carregar();
   }, [id, nav]);
+
+  // ---------------- ENVIAR NOTIFICAÇÃO TROCA ----------------
+  async function enviarTroca() {
+    if (!auth.currentUser) {
+      alert("Você precisa estar logado para enviar uma proposta.");
+      return;
+    }
+
+    if (!meuItem.trim()) return alert("Informe qual item deseja trocar.");
+
+    const interessado = await getUsuario(auth.currentUser.uid);
+
+    await criarNotificacao({
+      donoId: data.donoId,
+      interessadoId: auth.currentUser.uid,
+      interessadoNome: interessado?.nome || "Usuário",
+      itemId: data.id,
+      itemTitulo: data.titulo,
+      tipo: "troca",
+      mensagem: `
+📦 Proposta de troca recebida!
+Usuário: ${interessado?.nome}
+Item oferecido: ${meuItem}
+Mensagem: ${trocaMsg || "(sem mensagem)"}
+      `,
+    });
+
+    alert("Proposta de troca enviada ao responsável!");
+    setAbrirTroca(false);
+    setMeuItem("");
+    setTrocaMsg("");
+  }
+
+  // ---------------- ENVIAR NOTIFICAÇÃO DOAÇÃO ----------------
+  async function enviarDoacao() {
+    if (!auth.currentUser) {
+      alert("Você precisa estar logado para demonstrar interesse.");
+      return;
+    }
+
+    if (!nomeInteressado.trim()) return alert("Informe seu nome.");
+    if (!motivo.trim()) return alert("Explique por que deseja o item.");
+
+    const interessado = await getUsuario(auth.currentUser.uid);
+
+    await criarNotificacao({
+      donoId: data.donoId,
+      interessadoId: auth.currentUser.uid,
+      interessadoNome: interessado?.nome || "Usuário",
+      itemId: data.id,
+      itemTitulo: data.titulo,
+      tipo: "doacao",
+      mensagem: `
+🎁 Interesse em doação!
+Nome: ${nomeInteressado}
+Motivo: ${motivo}
+Mensagem adicional: ${mensagemD || "(nenhuma)"}
+      `,
+    });
+
+    alert("Seu interesse foi enviado ao responsável!");
+    setAbrirDoacao(false);
+    setNomeInteressado("");
+    setMotivo("");
+    setMensagemD("");
+  }
 
   if (loading) return <p className="loading">Carregando item...</p>;
   if (!data) return null;
@@ -56,7 +123,7 @@ export default function ItemDetalhes() {
       {/* Banner */}
       <section className="bt-banner">
         <div className="illus">
-          <img 
+          <img
             src={logo}
             alt="Baú de Tesouros"
             style={{ width: "100%", maxWidth: "1000px" }}
@@ -103,26 +170,14 @@ export default function ItemDetalhes() {
               ← Voltar
             </Button>
 
-            <Button variant="primary">
-              📩 Conversar com o responsável
-            </Button>
-
-            {/* BOTÃO TROCA */}
-            {data.tipo === "troca" && (
-              <Button 
-                variant="success"
-                onClick={() => setAbrirTroca(v => !v)}
-              >
+            {(data.tipo === "troca") && (
+              <Button variant="success" onClick={() => setAbrirTroca(v => !v)}>
                 🔄 Quero trocar este item
               </Button>
             )}
 
-            {/* BOTÃO DOAÇÃO */}
-            {data.tipo === "doacao" && (
-              <Button 
-                variant="success"
-                onClick={() => setAbrirDoacao(v => !v)}
-              >
+            {(data.tipo === "doacao") && (
+              <Button variant="success" onClick={() => setAbrirDoacao(v => !v)}>
                 🎁 Quero receber esta doação
               </Button>
             )}
@@ -134,7 +189,7 @@ export default function ItemDetalhes() {
               <h3>Propor troca</h3>
 
               <label>
-                Seu item para troca:
+                Item que você oferece:
                 <input
                   type="text"
                   placeholder="Ex: Motoca azul em bom estado"
@@ -144,7 +199,7 @@ export default function ItemDetalhes() {
               </label>
 
               <label>
-                Mensagem:
+                Mensagem adicional:
                 <textarea
                   placeholder="Explique sua proposta..."
                   value={trocaMsg}
@@ -153,21 +208,11 @@ export default function ItemDetalhes() {
               </label>
 
               <div className="troca-buttons">
-                <Button 
-                  variant="primary"
-                  onClick={() => {
-                    if (!meuItem.trim()) return alert("Informe seu item.");
-                    alert("Proposta enviada!");
-                    setAbrirTroca(false);
-                  }}
-                >
+                <Button variant="primary" onClick={enviarTroca}>
                   Enviar Proposta
                 </Button>
 
-                <Button 
-                  variant="neutral"
-                  onClick={() => setAbrirTroca(false)}
-                >
+                <Button variant="neutral" onClick={() => setAbrirTroca(false)}>
                   Cancelar
                 </Button>
               </div>
@@ -183,47 +228,36 @@ export default function ItemDetalhes() {
                 Seu nome:
                 <input
                   type="text"
-                  placeholder="Digite seu nome"
                   value={nomeInteressado}
                   onChange={(e) => setNomeInteressado(e.target.value)}
+                  placeholder="Digite seu nome"
                 />
               </label>
 
               <label>
                 Por que deseja o item?
                 <textarea
-                  placeholder="Explique o motivo..."
                   value={motivo}
                   onChange={(e) => setMotivo(e.target.value)}
+                  placeholder="Explique o motivo..."
                 />
               </label>
 
               <label>
                 Mensagem adicional (opcional):
                 <textarea
-                  placeholder="Escreva sua mensagem..."
                   value={mensagemD}
                   onChange={(e) => setMensagemD(e.target.value)}
+                  placeholder="Escreva sua mensagem..."
                 />
               </label>
 
               <div className="doacao-buttons">
-                <Button 
-                  variant="primary"
-                  onClick={() => {
-                    if (!nomeInteressado.trim()) return alert("Informe seu nome.");
-                    if (!motivo.trim()) return alert("Explique por que deseja o item.");
-                    alert("Interesse enviado!");
-                    setAbrirDoacao(false);
-                  }}
-                >
+                <Button variant="primary" onClick={enviarDoacao}>
                   Enviar Interesse
                 </Button>
 
-                <Button 
-                  variant="neutral"
-                  onClick={() => setAbrirDoacao(false)}
-                >
+                <Button variant="neutral" onClick={() => setAbrirDoacao(false)}>
                   Cancelar
                 </Button>
               </div>

@@ -1,18 +1,32 @@
+import { addDoc, collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import { db } from "./firebase";
-import { addDoc, collection } from "firebase/firestore";
 
+// Criar notificação
 export async function criarNotificacao(data: {
-  itemId: string;
-  itemTitulo: string;
   donoId: string;
   interessadoId: string;
   interessadoNome: string;
+  itemId: string;
+  itemTitulo: string;
   tipo: "troca" | "doacao";
   mensagem: string;
 }) {
-  return await addDoc(collection(db, "notificacoes"), {
+  return addDoc(collection(db, "notificacoes"), {
     ...data,
-    criadoEm: new Date(),
     lido: false,
+    criadoEm: new Date()
   });
+}
+
+// Listar notificações do dono
+export async function listarNotificacoesDoUsuario(uid: string) {
+  const ref = collection(db, "notificacoes");
+  const q = query(
+    ref,
+    where("donoId", "==", uid),
+    orderBy("criadoEm", "desc")
+  );
+
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
