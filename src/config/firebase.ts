@@ -9,7 +9,7 @@ const firebaseConfig = {
   authDomain: "bau-tesouros.firebaseapp.com",
   databaseURL: "https://bau-tesouros-default-rtdb.firebaseio.com",
   projectId: "bau-tesouros",
-  storageBucket: "bau-tesouros.appspot.com",
+  storageBucket: "bau-tesouros.firebasestorage.app",
   messagingSenderId: "1090626229764",
   appId: "1:1090626229764:web:26ef342e3cbb97b370c751"
 };

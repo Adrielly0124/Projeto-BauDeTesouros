@@ -1,14 +1,19 @@
 import { auth, db } from "../config/firebase";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  updateProfile 
+} from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { Usuario } from "../models/Usuario";
 
 export async function registrarUsuario(data: {
-  tipo: string;
+  tipo: "" | "responsavel" | "Instituicao";
   nome: string;
   email: string;
   cpf: string;
   senha: string;
+  avatar: string;     // <---- ADICIONADO
 }) {
   const cred = await createUserWithEmailAndPassword(auth, data.email, data.senha);
   const uid = cred.user.uid;
@@ -19,6 +24,7 @@ export async function registrarUsuario(data: {
     nome: data.nome,
     email: data.email,
     cpf: data.cpf,
+    avatar: data.avatar,           // ← salva avatar selecionado
     criadoEm: new Date().toISOString(),
   };
 
@@ -26,6 +32,7 @@ export async function registrarUsuario(data: {
 
   return usuario;
 }
+
 
 export async function login(email: string, senha: string) {
   return await signInWithEmailAndPassword(auth, email, senha);

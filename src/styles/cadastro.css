@@ -134,3 +134,32 @@ html, body {
     transform: scale(0.95);
   }
 }
+
+.avatar-grid {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0 20px;
+}
+
+.avatar-opcao {
+  cursor: pointer;
+  font-size: 32px;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: #fff;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.25s;
+}
+
+.avatar-opcao:hover {
+  background: #ffe0b5;
+}
+
+.avatar-opcao.selected {
+  border: 3px solid #ff9800;
+  background: #fff4d3;
+}

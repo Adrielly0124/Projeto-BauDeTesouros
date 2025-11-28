@@ -11,19 +11,19 @@ export default function DoacaoNovo() {
 
   async function handleSubmit(data: ItemFormData) {
     try {
-      // 1. Upload das imagens
-        const urls: string[] = []; 
+      // 🔥 1. Faz upload REAL das imagens
+      const urls = await uploadImagens(data.imagens);
 
-      // 2. Salvar no Firestore
+      // 🔥 2. Salvar no Firestore
       await criarItem({
         titulo: data.titulo,
         descricao: data.descricao,
         tipo: "doacao",
-        preco: 0, // Doação não tem preço
+        preco: 0, // doação não tem preço
         condicao: data.condicao,
         faixaEtaria: data.faixaEtaria,
         local: data.local,
-        imagens: urls,
+        imagens: urls, // agora salva as URLs corretas
         criadoEm: new Date(),
       });
 
@@ -31,7 +31,7 @@ export default function DoacaoNovo() {
       nav("/doacao");
 
     } catch (err) {
-      console.error(err);
+      console.error("Erro ao cadastrar item:", err);
       alert("Erro ao cadastrar item!");
     }
   }

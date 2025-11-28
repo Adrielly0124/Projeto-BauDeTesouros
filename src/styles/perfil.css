@@ -143,3 +143,69 @@
   .pf-form{ max-width: 100%; margin: 0; }
   .pf-products{ grid-template-columns: 1fr; }
 }
+
+/* Ações dos itens */
+.pf-prod-actions {
+  margin-top: 8px;
+  padding: 0 10px 12px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pf-btn.editar {
+  background: #0077ff;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 0 #005fcc;
+  border: none;
+}
+
+.pf-btn.editar:hover {
+  background: #005fcc;
+}
+
+.pf-btn.excluir {
+  background: #d32525;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 0 #a11616;
+  border: none;
+}
+
+.pf-btn.excluir:hover {
+  background: #a11616;
+}
+
+/* Escolha de avatar */
+.pf-avatar-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.pf-avatar-choice {
+  font-size: 34px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 6px 10px;
+  transition: 0.2s;
+}
+
+.pf-avatar-choice:hover {
+  background: #ffe7b6;
+}
+
+.pf-avatar-choice.selected {
+  border-color: #e79a2f;
+  background: #fff0d3;
+  box-shadow: 0 0 4px #e79a2f;
+}

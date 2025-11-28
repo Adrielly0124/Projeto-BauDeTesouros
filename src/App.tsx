@@ -1,14 +1,16 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 
-// Layouts
 import Topbar from "./componentes/Topbar";
 import Sidebar from "./componentes/Sidebar";
+import ProtectedRoute from "./componentes/ProductedRoute";
 
-// Páginas
+// Páginas públicas
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
 import Landing from "./pages/Landing";
+
+// Páginas internas
 import Home from "./pages/Home";
 import Venda from "./pages/Venda";
 import Doacao from "./pages/Doacao";
@@ -37,14 +39,19 @@ export default function App() {
     <BrowserRouter>
       <Routes>
 
-        {/* Página inicial sem layout (Landing, Login, Cadastro etc.) */}
+        {/* Rotas públicas */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
 
-
-        {/* Rotas internas com layout */}
-        <Route element={<MainLayout />}>
+        {/* Rotas protegidas (precisa estar logado) */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/home" element={<Home />} />
           <Route path="/venda" element={<Venda />} />
           <Route path="/doacao" element={<Doacao />} />
@@ -52,7 +59,6 @@ export default function App() {
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/contato" element={<Contato />} />
           <Route path="/item/:id" element={<ItemDetalhes />} />
-
 
           {/* Subpáginas */}
           <Route path="/venda/novo" element={<VendaNovo />} />

@@ -11,8 +11,10 @@ export default function VendaNovo() {
 
   async function handleSubmit(data: ItemFormData) {
     try {
-        const urls: string[] = []; 
+      // 🔥 Upload real das imagens
+      const urls = await uploadImagens(data.imagens);
 
+      // 🔥 Salvando no Firestore
       await criarItem({
         titulo: data.titulo,
         descricao: data.descricao,
@@ -21,14 +23,15 @@ export default function VendaNovo() {
         condicao: data.condicao,
         faixaEtaria: data.faixaEtaria,
         local: data.local,
-        imagens: urls,
+        imagens: urls,          // agora vai com URLs válidas!
         criadoEm: new Date(),
       });
 
       alert("Item de VENDA cadastrado com sucesso!");
       nav("/venda");
+
     } catch (err) {
-      console.error(err);
+      console.error("Erro ao cadastrar item:", err);
       alert("Erro ao cadastrar item!");
     }
   }
@@ -41,7 +44,11 @@ export default function VendaNovo() {
         </div>
       </section>
 
-      <ItemForm kind="venda" onSubmit={handleSubmit} onCancel={() => nav("/venda")} />
+      <ItemForm
+        kind="venda"
+        onSubmit={handleSubmit}
+        onCancel={() => nav("/venda")}
+      />
     </>
   );
 }

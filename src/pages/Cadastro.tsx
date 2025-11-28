@@ -11,13 +11,27 @@ export default function Cadastro() {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
 
-  const [form, setForm] = useState({
+  // Avatares disponíveis
+  const AVATARES = ["🧒", "👧", "👦", "🧑", "👩", "👨"];
+
+  type TipoUsuario = "" | "responsavel" | "Instituicao";
+
+  const [form, setForm] = useState<{
+    tipo: TipoUsuario;
+    nome: string;
+    email: string;
+    cpf: string;
+    senha: string;
+    repetirSenha: string;
+    avatar: string;
+  }>({
     tipo: "",
     nome: "",
     email: "",
     cpf: "",
     senha: "",
-    repetirSenha: ""
+    repetirSenha: "",
+    avatar: AVATARES[0], // avatar padrão
   });
 
   function handleChange(e: any) {
@@ -43,7 +57,8 @@ export default function Cadastro() {
         nome: form.nome,
         email: form.email,
         cpf: form.cpf,
-        senha: form.senha
+        senha: form.senha,
+        avatar: form.avatar, // <-- ENVIA O AVATAR ESCOLHIDO
       });
 
       navigate("/login");
@@ -65,11 +80,7 @@ export default function Cadastro() {
   return (
     <div className="cadastro-bg">
       <div className="cadastro-card">
-
-        <img src={logo} alt="Baú de Tesouros" className="cadastro-logo" />
-
-        <h2 className="cadastro-title">Cadastro</h2>
-
+          
         {erro && <div className="cadastro-erro">{erro}</div>}
 
         <form onSubmit={handleSubmit} className="cadastro-form">
@@ -81,7 +92,7 @@ export default function Cadastro() {
             <option value="instituicao">Instituição</option>
           </select>
 
-          <label>Nome</label>
+          <label>Nome Completo</label>
           <input name="nome" value={form.nome} onChange={handleChange} />
 
           <label>E-mail</label>
@@ -106,9 +117,24 @@ export default function Cadastro() {
             onChange={handleChange}
           />
 
-          <a href="/Login"><button type="submit" className="cadastro-btn" disabled={loading}>
+          {/* ------------------ AVATAR ------------------ */}
+          <label>Escolha seu avatar</label>
+          <div className="avatar-grid">
+            {AVATARES.map((a) => (
+              <div
+                key={a}
+                className={`avatar-opcao ${form.avatar === a ? "selected" : ""}`}
+                onClick={() => setForm({ ...form, avatar: a })}
+              >
+                {a}
+              </div>
+            ))}
+          </div>
+
+          {/* Botão corrigido */}
+          <button type="submit" className="cadastro-btn" disabled={loading}>
             {loading ? "Cadastrando..." : "CADASTRAR"}
-          </button></a>
+          </button>
         </form>
       </div>
     </div>

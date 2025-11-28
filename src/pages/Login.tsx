@@ -15,7 +15,9 @@ const Login: React.FC = () => {
   const [mensagem, setMensagem] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleLogin() {
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault(); // impede reload da página
+
     if (!email.trim() || !senha.trim()) {
       setMensagem("Preencha todos os campos.");
       return;
@@ -25,10 +27,12 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
+      // 🔥 LOGIN REAL COM FIREBASE
       await signInWithEmailAndPassword(auth, email, senha);
 
+      // 🔒 LOGIN VERIFICADO — AGORA PODE ENTRAR
       navigate("/home");
-      
+
     } catch (error: any) {
       console.error(error);
 
@@ -48,7 +52,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="login-bg">
-      <div className="login-card">
+      <form className="login-card" onSubmit={handleLogin}>
 
         <img src={logo} alt="Baú de Tesouros" className="login-logo" />
 
@@ -60,6 +64,7 @@ const Login: React.FC = () => {
           className="login-input"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
 
         <label className="login-label">SENHA</label>
@@ -68,14 +73,23 @@ const Login: React.FC = () => {
           className="login-input"
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
+          required
         />
 
-        <a href="/Home"><button className="login-btn" onClick={handleLogin} disabled={loading}>
+        <button
+          className="login-btn"
+          onClick={handleLogin}
+          disabled={loading}
+        >
           {loading ? "Entrando..." : "ENTRAR"}
-        </button></a>
+        </button>
 
         {mensagem && <p className="login-msg">{mensagem}</p>}
-      </div>
+
+        <div className="login-footer">
+          <a href="/cadastro">Ainda não tem conta? Cadastre-se</a>
+        </div>
+      </form>
     </div>
   );
 };

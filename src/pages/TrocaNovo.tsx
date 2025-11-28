@@ -11,24 +11,27 @@ export default function TrocaNovo() {
 
   async function handleSubmit(data: ItemFormData) {
     try {
-        const urls: string[] = []; 
+      // 🔥 Upload real das imagens
+      const urls = await uploadImagens(data.imagens);
 
+      // 🔥 Salvando no Firestore
       await criarItem({
         titulo: data.titulo,
         descricao: data.descricao,
         tipo: "troca",
-        preco: 0,
+        preco: 0, // troca não tem preço
         condicao: data.condicao,
         faixaEtaria: data.faixaEtaria,
         local: data.local,
-        imagens: urls,
+        imagens: urls, // agora com as URLs do Firebase Storage
         criadoEm: new Date(),
       });
 
       alert("Item de TROCA cadastrado com sucesso!");
       nav("/troca");
+
     } catch (err) {
-      console.error(err);
+      console.error("Erro ao cadastrar item:", err);
       alert("Erro ao cadastrar item!");
     }
   }
@@ -41,7 +44,11 @@ export default function TrocaNovo() {
         </div>
       </section>
 
-      <ItemForm kind="troca" onSubmit={handleSubmit} onCancel={() => nav("/troca")} />
+      <ItemForm 
+        kind="troca" 
+        onSubmit={handleSubmit} 
+        onCancel={() => nav("/troca")} 
+      />
     </>
   );
 }

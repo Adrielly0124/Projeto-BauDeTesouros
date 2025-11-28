@@ -1,153 +1,221 @@
-import React, { useState } from 'react';
-import '../styles/perfil.css';
+import React, { useEffect, useState } from "react";
+import "../styles/perfil.css";
+import { auth, db } from "../config/firebase";
+import { getUsuario } from "../services/authService";
+import { listarMeusItens } from "../config/itens";
+import { doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
-type Produto = {
-  id: string;
-  nome: string;
-  imagem?: string;
-  status: 'NAO_VENDIDO' | 'VENDIDO';
-  data: string; // dd/mm/aa
-};
+const AVATARES = ["👦", "👧", "🧒", "🐻", "🐱", "🧸", "🎀", "🌟"];
 
 export default function Perfil() {
-  // Mock do usuário
-  const [usuario, setUsuario] = useState({
-    handle: '@Mamãe Criativa',
-    nomeCompleto: 'Gislaine Pereira Araújo',
-    email: 'gis.laine.arau@gmail.com',
-    localizacao: 'Limeira - SP',
-  });
+  const nav = useNavigate();
 
-  // Mock de produtos
-  const [produtos] = useState<Produto[]>([
-    { id: '1', nome: 'Brinquedo Interativo', status: 'NAO_VENDIDO', data: '12/03/25' },
-    { id: '2', nome: 'Brinquedo Interativo', status: 'NAO_VENDIDO', data: '12/03/25' },
-    { id: '3', nome: 'Jogo Educativo', status: 'VENDIDO', data: '02/04/25' },
-  ]);
+  const [usuario, setUsuario] = useState<any>(null);
+  const [meusItens, setMeusItens] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // State do formulário (edição)
   const [form, setForm] = useState({
-    usuario: 'mamae.criativa',
-    nome: usuario.nomeCompleto,
-    email: usuario.email,
-    local: usuario.localizacao,
+    usuario: "",
+    nome: "",
+    email: "",
+    local: "",
+    avatar: "👦",
   });
 
-  function salvar(e: React.FormEvent) {
+  useEffect(() => {
+    async function carregar() {
+      const u = auth.currentUser;
+      if (!u) return;
+
+      const dados = await getUsuario(u.uid);
+      setUsuario(dados);
+
+      setForm({
+        usuario: dados?.nome || "",
+        nome: dados?.nome || "",
+        email: dados?.email || "",
+        local: dados?.local || "",
+        avatar: dados?.avatar || "👦",
+      });
+
+      const itens = await listarMeusItens();
+      setMeusItens(itens);
+
+      setLoading(false);
+    }
+
+    carregar();
+  }, []);
+
+  // ------------ SALVAR PERFIL -------------
+  async function salvarPerfil(e: React.FormEvent) {
     e.preventDefault();
-    setUsuario({
-      handle: form.usuario?.startsWith('@') ? form.usuario : `@${form.usuario}`,
-      nomeCompleto: form.nome,
-      email: form.email,
-      localizacao: form.local,
-    });
-    // aqui no futuro: chamar API
-    alert('Perfil atualizado com sucesso!');
+
+    try {
+      const ref = doc(db, "usuarios", auth.currentUser!.uid);
+
+      await updateDoc(ref, {
+        handle: form.usuario,
+        nome: form.nome,
+        local: form.local,
+        avatar: form.avatar,
+      });
+
+      alert("Perfil atualizado com sucesso!");
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao atualizar perfil!");
+    }
   }
 
-  function cancelar() {
-    setForm({
-      usuario: usuario.handle.replace(/^@/, ''),
-      nome: usuario.nomeCompleto,
-      email: usuario.email,
-      local: usuario.localizacao,
-    });
+  // ------------ EXCLUIR ITEM -------------
+  async function excluirItem(id: string) {
+    if (!window.confirm("Tem certeza que deseja excluir este item?")) return;
+
+    try {
+      await deleteDoc(doc(db, "itens", id));
+      setMeusItens((prev) => prev.filter((p) => p.id !== id));
+      alert("Item excluído com sucesso!");
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao excluir item!");
+    }
   }
+
+  if (loading) return <p style={{ textAlign: "center" }}>Carregando...</p>;
 
   return (
     <>
-        <h2 className="pf-title">Página de Perfil do Usuário</h2>
+      <h2 className="pf-title">Perfil do Usuário</h2>
 
-        <div className="pf-grid">
-          {/* Formulário à esquerda */}
-          <section className="pf-card pf-form">
-            <p className="pf-help">
-              Olá! Você pode editar as informações do seu perfil na Baú de Tesouros.
-              Por favor, preencha os campos abaixo com as informações que você deseja atualizar.
-            </p>
+      <div className="pf-grid">
 
-            <form onSubmit={salvar} className="pf-form-fields">
-              <label>
-                Nome de Usuário:
-                <input
-                  value={form.usuario}
-                  onChange={(e) => setForm({ ...form, usuario: e.target.value })}
-                  placeholder="seu.usuario"
-                  required
-                />
-              </label>
+        {/* -------- FORMULÁRIO -------- */}
+        <section className="pf-card pf-form">
+          <p className="pf-help">
+            Atualize suas informações abaixo.
+          </p>
 
-              <label>
-                Seu Nome Completo:
-                <input
-                  value={form.nome}
-                  onChange={(e) => setForm({ ...form, nome: e.target.value })}
-                  placeholder="Seu nome"
-                  required
-                />
-              </label>
+          <form onSubmit={salvarPerfil} className="pf-form-fields">
+            <label>
+              Nome Completo:
+              <input
+                value={form.nome}
+                onChange={(e) => setForm({ ...form, nome: e.target.value })}
+              />
+            </label>
 
-              <label>
-                Seu E-mail:
-                <input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  placeholder="voce@email.com"
-                  required
-                />
-              </label>
+            <label>
+              E-mail:
+              <input type="email" value={form.email} disabled />
+            </label>
 
-              <label>
-                Sua Localização (Cidade, Estado):
-                <input
-                  value={form.local}
-                  onChange={(e) => setForm({ ...form, local: e.target.value })}
-                  placeholder="Cidade - UF"
-                />
-              </label>
+            <label>
+              Localização:
+              <input
+                value={form.local}
+                onChange={(e) => setForm({ ...form, local: e.target.value })}
+                placeholder="Cidade - UF"
+              />
+            </label>
 
-              <div className="pf-actions">
-                <button type="submit" className="pf-btn salvar">Salvar</button>
-                <button type="button" className="pf-btn cancelar" onClick={cancelar}>Cancelar</button>
+            {/* --- ESCOLHA DE AVATAR --- */}
+            <label>
+              Escolha seu Avatar:
+              <div className="pf-avatar-options">
+                {AVATARES.map((a) => (
+                  <span
+                    key={a}
+                    className={`pf-avatar-choice ${
+                      form.avatar === a ? "selected" : ""
+                    }`}
+                    onClick={() => setForm({ ...form, avatar: a })}
+                  >
+                    {a}
+                  </span>
+                ))}
               </div>
-            </form>
-          </section>
+            </label>
 
-          {/* Card do usuário à direita */}
-          <section className="pf-right">
-            <div className="pf-user">
-              <div className="pf-avatar" aria-hidden>
-                <div className="pf-avatar-icon">👤</div>
-              </div>
-<br></br>
-              <div className="pf-user-info">
-                <div className="pf-handle">{usuario.handle}</div>
-                <div className="pf-name">{usuario.nomeCompleto}</div>
-                <div className="pf-email">{usuario.email}</div>
-                <div className="pf-local">{usuario.localizacao}</div>
-              </div>
+            <div className="pf-actions">
+              <button type="submit" className="pf-btn salvar">Salvar</button>
+              <button type="button" className="pf-btn cancelar">
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </section>
+
+        {/* -------- PRODUTOS -------- */}
+        <section className="pf-right">
+
+          {/* CARD DO USUÁRIO */}
+          <div className="pf-user">
+            <div className="pf-avatar">
+              <div className="pf-avatar-icon">{form.avatar}</div>
             </div>
 
-            <h3 className="pf-subtitle">Produtos Cadastrados</h3>
-
-            <div className="pf-products">
-              {produtos.map((p) => (
-                <article key={p.id} className="pf-prod-card">
-                  <div className="pf-prod-thumb">
-                    {/* quando tiver imagem real, troque pelo src */}
-                    <span role="img" aria-label="produto">🧩</span>
-                  </div>
-                  <div className="pf-prod-body">
-                    <div className="pf-prod-name">{p.nome}</div>
-                    <div className="pf-prod-status">{p.status === 'NAO_VENDIDO' ? 'NÃO VENDIDO' : 'VENDIDO'}</div>
-                    <div className="pf-prod-date">cadastrado em {p.data}</div>
-                  </div>
-                </article>
-              ))}
+            <div className="pf-user-info">
+              <div className="pf-handle">{form.usuario}</div>
+              <div className="pf-name">{form.nome}</div>
+              <div className="pf-email">{form.email}</div>
+              <div className="pf-local">{form.local}</div>
             </div>
-          </section>
-        </div>
-      </>
+          </div>
+
+          <h3 className="pf-subtitle">Meus Itens Cadastrados</h3>
+
+          <div className="pf-products">
+            {meusItens.length === 0 && (
+              <p style={{ opacity: 0.7 }}>Você ainda não cadastrou itens.</p>
+            )}
+
+            {meusItens.map((p) => (
+              <article key={p.id} className="pf-prod-card">
+
+                <div className="pf-prod-thumb">
+                  {p.imagens?.length > 0 ? (
+                    <img src={p.imagens[0]} alt={p.titulo} />
+                  ) : (
+                    <span>🧩</span>
+                  )}
+                </div>
+
+                <div className="pf-prod-body">
+                  <div className="pf-prod-name">{p.titulo}</div>
+                  <div className="pf-prod-status">{p.tipo.toUpperCase()}</div>
+                  <div className="pf-prod-date">
+                    cadastrado em{" "}
+                    {new Date(
+                      p.criadoEm?.seconds
+                        ? p.criadoEm.seconds * 1000
+                        : p.criadoEm
+                    ).toLocaleDateString()}
+                  </div>
+                </div>
+
+                <div className="pf-prod-actions">
+                  <button
+                    className="pf-btn editar"
+                    onClick={() => nav(`/item/editar/${p.id}`)}
+                  >
+                    ✏️ Editar
+                  </button>
+
+                  <button
+                    className="pf-btn excluir"
+                    onClick={() => excluirItem(p.id)}
+                  >
+                    🗑 Excluir
+                  </button>
+                </div>
+
+              </article>
+            ))}
+          </div>
+        </section>
+      </div>
+    </>
   );
 }
