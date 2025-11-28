@@ -1,0 +1,34 @@
+.topo {
+  position: sticky;
+  top: 0;
+  background: var(--cor-fundo);
+  border-bottom: 1px solid var(--borda);
+  z-index: 10;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: var(--fs-20);
+  color: var(--cor-primaria);
+}
+
+.links {
+  display: flex;
+  gap: var(--esp-6);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.entrar {
+  padding: 8px 14px;
+  border: 1px solid var(--cor-primaria);
+  border-radius: var(--raio-md);
+}

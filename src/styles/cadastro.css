@@ -1,0 +1,136 @@
+/* Reset global */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;     /* impede scroll */
+  background: #61C2E8;  /* mesma cor do login */
+}
+
+/* =========================
+   FUNDO CENTRAL
+========================= */
+.cadastro-bg {
+  width: 100%;
+  height: 100%;
+  background: #61C2E8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px; 
+}
+
+/* =========================
+   CARD
+========================= */
+.cadastro-card {
+  width: 95%;
+  max-width: 440px;     /* Aumentado para ficar igual ao landing */
+  background: #BDEAFF;  /* Mesma cor dos outros cards */
+  padding: 38px 30px;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: none;   
+  margin-top: 4%;  /* remove sombra para manter padrão */
+}
+
+/* =========================
+   LOGO
+========================= */
+.cadastro-logo {
+  width: 200px;
+  max-width: 80%;
+  margin-bottom: 12px;
+}
+
+/* =========================
+   TÍTULO
+========================= */
+.cadastro-title {
+  font-size: 22px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  color: #0A0A0A;
+}
+
+/* =========================
+   FORMULÁRIO
+========================= */
+.cadastro-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Labels */
+.cadastro-form label {
+  text-align: left;
+  font-size: 13px;
+  font-weight: bold;
+  color: #1A1A1A;
+}
+
+/* Inputs e selects */
+.cadastro-form input,
+.cadastro-form select {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  border: none;
+  padding: 8px 10px;
+  background: #FFF;
+  font-size: 14px;
+  outline: none;
+  box-shadow: inset 0 0 3px rgba(0,0,0,0.1);
+}
+
+/* =========================
+   BOTÃO
+========================= */
+.cadastro-btn {
+  margin-top: 18px;
+  width: 100%;
+  height: 44px;
+  background: #1F4E99;  /* igual ao login */
+  border: none;
+  color: #FFF;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.cadastro-btn:hover {
+  background: #163D7A;
+}
+
+/* =========================
+   MENSAGEM DE ERRO
+========================= */
+.cadastro-erro {
+  background: #FFD6D6;
+  border: 2px solid #FF9E9E;
+  padding: 10px;
+  color: #B30000;
+  font-weight: bold;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  width: 100%;
+  text-align: center;
+}
+
+/* =========================
+   RESPONSIVIDADE
+========================= */
+@media (max-height: 600px) {
+  .cadastro-card {
+    transform: scale(0.95);
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "name": "baude-tesouros",
+  "private": true,
+  "version": "0.1.0",
+  "dependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/mongoose": "^5.11.96",
+    "bcryptjs": "^3.0.3",
+    "firebase": "^12.6.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.3",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-scripts": "5.0.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/dotenv": "^6.1.1",
+    "@types/multer": "^2.0.0",
+    "@types/react": "18.2.66",
+    "@types/react-dom": "18.2.23",
+    "@types/react-router-dom": "^5.3.3",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "eslint": "^9.12.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "install": "^0.13.0",
+    "npm": "^11.6.2",
+    "prettier": "^3.3.3",
+    "react-router-dom": "^7.9.5",
+    "typescript": "4.9.5"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "eslint .",
+    "format": "prettier -w ."
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ]
+}

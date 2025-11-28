@@ -1,0 +1,149 @@
+/* Estrutura geral */
+.cad-container {
+  background: #fff;
+  border: 3px solid var(--cinza-borda);
+  border-radius: 16px;
+  padding: 24px;
+  box-sizing: border-box;
+  margin-top: 18px;
+}
+
+.cad-container h3 {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+
+.cad-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+.cad-left,
+.cad-right {
+  display: grid;
+  gap: 14px;
+  padding: 10px;
+}
+
+
+.cad-form label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #613b00;
+  display: grid;
+  gap: 6px;
+  margin: 3%;
+}
+
+.cad-form input,
+.cad-form select,
+.cad-form textarea {
+  border: 2px solid #00000018;
+  border-radius: 10px;
+  padding: 10px 12px;
+  outline: none;
+  background: #fff5e4;
+  font-size: 14px;
+  width: 100%;
+}
+
+.cad-form input:focus,
+.cad-form select:focus,
+.cad-form textarea:focus {
+  border-color: #e79a2f;
+  box-shadow: 0 0 0 3px #e79a2f33;
+}
+
+/* Upload de imagens */
+.cad-upload {
+  display: grid;
+  gap: 8px;
+}
+
+.cad-upload input[type="file"] {
+  font-weight: 600;
+  color: #613b00;
+}
+
+.cad-upload-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cad-upload-preview div {
+  width: 90px;
+  height: 90px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid #00000018;
+  background: #f6f8fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cad-upload-preview img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Mensagem de erro */
+.cad-erro {
+  margin-top: 12px;
+  background: #ffe6e6;
+  border: 2px solid #ffb3c0;
+  color: #b30020;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-weight: 700;
+}
+
+/* Botões */
+.cad-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.cad-btn {
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  color: #fff;
+}
+
+.cad-btn.venda {
+  background: #ff4d4f;
+  box-shadow: 0 3px 0 #b92c2e;
+}
+
+.cad-btn.troca {
+  background: #58a9e0;
+  box-shadow: 0 3px 0 #377fb2;
+}
+
+.cad-btn.doacao {
+  background: #3a8d4b;
+  box-shadow: 0 3px 0 #2a6a38;
+}
+
+.cad-btn.cancelar {
+  background: #ffb74d;
+  box-shadow: 0 3px 0 #c98500;
+  color: #000;
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+  .cad-form {
+    grid-template-columns: 1fr;
+  }
+}

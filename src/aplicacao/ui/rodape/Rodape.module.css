@@ -1,0 +1,9 @@
+.rodape {
+  border-top: 1px solid var(--borda);
+  background: var(--cor-superficie);
+  padding-block: var(--esp-6);
+  color: var(--cor-texto-suave);
+  font-size: var(--fs-14);
+}
+
+echo .rodape { padding: 1rem 0; background-color: #f5f5f5; text-align: center; }
