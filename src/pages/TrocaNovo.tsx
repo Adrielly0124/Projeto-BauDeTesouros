@@ -42,16 +42,7 @@ export default function TrocaNovo() {
         const usuario = await getUsuario(user.uid);
 
         // ----------------------
-        // 4) Criar notificação (opcional)
-        await criarNotificacao({
-          itemId: novoItemId,
-          itemTitulo: data.titulo,
-          donoId: user.uid,
-          interessadoId: user.uid, // porque foi o criador do item
-          interessadoNome: usuario?.nome || "Usuário",
-          tipo: "troca",
-          mensagem: `Seu item "${data.titulo}" foi cadastrado com sucesso e está disponível para trocas!`,
-        });
+      
       }
 
       alert("Item de TROCA cadastrado com sucesso!");

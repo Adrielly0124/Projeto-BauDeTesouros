@@ -7,21 +7,17 @@ import { uploadImagens } from "../config/storage";
 import { criarItem } from "../config/itens";
 
 import { auth } from "../config/firebase";
-import { getUsuario } from "../services/authService";
-import { criarNotificacao } from "../config/notificacoes";
 
 export default function DoacaoNovo() {
   const nav = useNavigate();
 
   async function handleSubmit(data: ItemFormData) {
     try {
-      // ---------------------------------------
       // 1) Upload real das imagens
       const urls = await uploadImagens(data.imagens);
 
-      // ---------------------------------------
-      // 2) Criar item e obter o ID retornado
-      const novoItemId = await criarItem({
+      // 2) Criar item
+      const novoItem = await criarItem({
         titulo: data.titulo,
         descricao: data.descricao,
         tipo: "doacao",
@@ -31,28 +27,8 @@ export default function DoacaoNovo() {
         local: data.local,
         imagens: urls,
         criadoEm: new Date(),
-        donoId: auth.currentUser?.uid, // <<< DONO DO ITEM
+        usuarioId: auth.currentUser?.uid,  // DONO DO ITEM (correto)
       });
-
-      // ---------------------------------------
-      // 3) Buscar usuário logado
-      const user = auth.currentUser;
-
-      if (user) {
-        const usuario = await getUsuario(user.uid);
-
-        // ---------------------------------------
-        // 4) Criar notificação da doação
-        await criarNotificacao({
-          itemId: novoItemId.id,
-          itemTitulo: data.titulo,
-          donoId: user.uid,
-          interessadoId: user.uid, // é o criador do item
-          interessadoNome: usuario?.nome || "Usuário",
-          tipo: "doacao",
-          mensagem: `Seu item de doação "${data.titulo}" foi cadastrado e está disponível para interessados.`,
-        });
-      }
 
       alert("Doação cadastrada com sucesso!");
       nav("/doacao");

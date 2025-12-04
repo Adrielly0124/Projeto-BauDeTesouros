@@ -1,17 +1,17 @@
-import { db } from "../config/firebase";
-import { 
-  collection, 
-  addDoc, 
-  getDocs, 
-  query, 
-  where, 
-  orderBy 
+import { db, auth } from "../config/firebase";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  doc,
+  updateDoc,
 } from "firebase/firestore";
 
-import { auth } from "../config/firebase";
-
 /**
- * Criar item no Firestore (funciona sem imagens)
+ * Criar item no Firestore
  */
 export async function criarItem(data: any) {
   if (!auth.currentUser) {
@@ -27,10 +27,11 @@ export async function criarItem(data: any) {
     faixaEtaria: data.faixaEtaria ?? null,
     local: data.local,
 
-    // 🔥 sempre garantir um array
+    // 🔥 Sempre garantir que imagens seja array
     imagens: Array.isArray(data.imagens) ? data.imagens : [],
 
     usuarioId: auth.currentUser.uid,
+    disponivel: true, // 🔥 Por padrão, item está disponível
     criadoEm: new Date(),
   });
 }
@@ -41,7 +42,7 @@ export async function criarItem(data: any) {
 export async function listarItensPorTipo(tipo: string) {
   const q = query(collection(db, "itens"), where("tipo", "==", tipo));
   const snap = await getDocs(q);
-  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  return snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 }
 
 /**
@@ -56,31 +57,41 @@ export async function listarMeusItens() {
   );
 
   const snap = await getDocs(q);
-  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  return snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 }
 
 /**
- * ⭐ NOVO: Lista TODOS os itens cadastrados
- * Ordenados pelo mais recente
+ * ⭐ Lista TODOS os itens cadastrados
+ * ordenados pelo mais recente
  */
 export async function listarTodosItens() {
-  const q = query(
-    collection(db, "itens"),
-    orderBy("criadoEm", "desc")
-  );
+  const q = query(collection(db, "itens"), orderBy("criadoEm", "desc"));
 
   const snap = await getDocs(q);
-  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  return snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 }
 
-// 🔍 Busca simples por título (case insensitive)
+/**
+ * 🔍 Busca simples por título
+ */
 export async function buscarItens(texto: string) {
   const snap = await getDocs(collection(db, "itens"));
   const termo = texto.toLowerCase();
 
   return snap.docs
-    .map(doc => ({ id: doc.id, ...doc.data() }))
-    .filter((it: any) =>
-      it.titulo?.toLowerCase().includes(termo)
-    );
+    .map((doc) => ({ id: doc.id, ...doc.data() }))
+    .filter((it: any) => it.titulo?.toLowerCase().includes(termo));
+}
+
+/**
+ * 3️⃣ Marcar item como indisponível
+ * Chamado quando o dono aceita a troca/doação
+ */
+export async function marcarItemComoIndisponivel(itemId: string) {
+  const ref = doc(db, "itens", itemId);
+
+  await updateDoc(ref, {
+    disponivel: false,   // 🔥 Marca que não está mais disponível
+    atualizadoEm: new Date(),
+  });
 }

@@ -78,11 +78,11 @@ export default function Home() {
           {!loading && filtrados.length > 0 && (
             <div className="bt-grid">
               {filtrados.map((it) => (
-                <ItemCard 
+                <ItemCard
                   key={it.id}
                   id={it.id}
                   name={it.name}
-                  kind={it.kind}
+                  kind={it.kind ?? ""}   // ← evita o erro
                   image={it.image}
                 />
               ))}

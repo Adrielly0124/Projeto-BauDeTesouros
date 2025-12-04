@@ -49,6 +49,18 @@ export default function ItemDetalhes() {
     carregar();
   }, [id, nav]);
 
+  // ------------------------------------------------
+  // 🔥 FUNÇÃO AUXILIAR PARA PEGAR O DONO DO ITEM
+  // ------------------------------------------------
+  function getDonoId() {
+    const donoId = data?.usuarioId;
+    if (!donoId) {
+      console.error("ERRO: item sem usuarioId no Firestore:", data);
+      alert("Erro: item sem dono no banco.");
+    }
+    return donoId;
+  }
+
   // ---------------- ENVIAR NOTIFICAÇÃO TROCA ----------------
   async function enviarTroca() {
     if (!auth.currentUser) {
@@ -58,10 +70,13 @@ export default function ItemDetalhes() {
 
     if (!meuItem.trim()) return alert("Informe qual item deseja trocar.");
 
+    const donoId = getDonoId();
+    if (!donoId) return; // evita crash
+
     const interessado = await getUsuario(auth.currentUser.uid);
 
     await criarNotificacao({
-      donoId: data.donoId,
+      donoId,
       interessadoId: auth.currentUser.uid,
       interessadoNome: interessado?.nome || "Usuário",
       itemId: data.id,
@@ -72,10 +87,10 @@ export default function ItemDetalhes() {
 Usuário: ${interessado?.nome}
 Item oferecido: ${meuItem}
 Mensagem: ${trocaMsg || "(sem mensagem)"}
-      `,
+      `.trim(),
     });
 
-    alert("Proposta de troca enviada ao responsável!");
+    alert("Proposta enviada ao responsável!");
     setAbrirTroca(false);
     setMeuItem("");
     setTrocaMsg("");
@@ -89,12 +104,15 @@ Mensagem: ${trocaMsg || "(sem mensagem)"}
     }
 
     if (!nomeInteressado.trim()) return alert("Informe seu nome.");
-    if (!motivo.trim()) return alert("Explique por que deseja o item.");
+    if (!motivo.trim()) return alert("Explique o motivo.");
+
+    const donoId = getDonoId();
+    if (!donoId) return;
 
     const interessado = await getUsuario(auth.currentUser.uid);
 
     await criarNotificacao({
-      donoId: data.donoId,
+      donoId,
       interessadoId: auth.currentUser.uid,
       interessadoNome: interessado?.nome || "Usuário",
       itemId: data.id,
@@ -105,10 +123,10 @@ Mensagem: ${trocaMsg || "(sem mensagem)"}
 Nome: ${nomeInteressado}
 Motivo: ${motivo}
 Mensagem adicional: ${mensagemD || "(nenhuma)"}
-      `,
+      `.trim(),
     });
 
-    alert("Seu interesse foi enviado ao responsável!");
+    alert("Interesse enviado ao responsável!");
     setAbrirDoacao(false);
     setNomeInteressado("");
     setMotivo("");
@@ -161,7 +179,7 @@ Mensagem adicional: ${mensagemD || "(nenhuma)"}
           )}
 
           <p><strong>Localização:</strong> {data.local}</p>
-          <p><strong>Categoria:</strong> {data.tipo.toUpperCase()}</p>
+          <p><strong>Categoria:</strong> {data.tipo?.toUpperCase()}</p>
 
           {/* ------- Botões ------- */}
           <div className="det-btns">
@@ -170,13 +188,13 @@ Mensagem adicional: ${mensagemD || "(nenhuma)"}
               ← Voltar
             </Button>
 
-            {(data.tipo === "troca") && (
+            {data.tipo === "troca" && (
               <Button variant="success" onClick={() => setAbrirTroca(v => !v)}>
                 🔄 Quero trocar este item
               </Button>
             )}
 
-            {(data.tipo === "doacao") && (
+            {data.tipo === "doacao" && (
               <Button variant="success" onClick={() => setAbrirDoacao(v => !v)}>
                 🎁 Quero receber esta doação
               </Button>

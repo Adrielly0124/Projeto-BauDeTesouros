@@ -23,9 +23,28 @@
   box-sizing: border-box;
 }
 
+/* Remove somente o fundo amarelo dos cards desejados */
+.pf-no-bg {
+  background: #ffffff !important; /* fundo branco */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* sombra leve */
+}
+
 .pf-form{
   max-width: 560px;
   margin-left: 8px;
+}
+.pf-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  max-width: 1300px;
+  margin: auto;
+}
+
+.pf-col {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
 }
 
 /* Texto de ajuda */
@@ -119,13 +138,25 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 }
-.pf-prod-card{
-  background:#fff;
-  border-radius: 14px;
-  border: 2px solid #00000014;
-  overflow: hidden;
-  box-shadow: 0 2px 0 #00000010;
+/* CARD INDIVIDUAL DOS ITENS */
+.pf-prod-card {
+  background: #ffffff;             /* fundo branco */
+  border: 2px solid #f2c76e;       /* borda amarelo suave */
+  border-radius: 12px;             /* cantos arredondados */
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.10); /* sombra leve */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+/* Efeito hover — opcional */
+.pf-prod-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+}
+
 .pf-prod-thumb{
   height: 160px; background:#f3f6fa; display:flex; align-items:center; justify-content:center;
   font-size: 46px;

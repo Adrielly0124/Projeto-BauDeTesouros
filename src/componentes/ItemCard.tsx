@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import Badge from './ui/Badge';
 import Button from './ui/Button';
 
-export type Kind = 'venda' | 'troca' | 'doacao';
+export type Kind = 'venda' | 'troca' | 'doacao' | '';  // ← aceitamos vazio
 
 export type ItemCardProps = {
   id: string;
   name: string;
   image?: string;
-  kind: Kind;
+  kind?: Kind; // ← agora é opcional
 };
 
-export default function ItemCard({ id, name, image, kind }: ItemCardProps) {
+export default function ItemCard({ id, name, image, kind = "" }: ItemCardProps) {
   const nav = useNavigate();
 
   function abrirDetalhes() {
@@ -21,12 +21,18 @@ export default function ItemCard({ id, name, image, kind }: ItemCardProps) {
 
   return (
     <div className="bt-card">
-      <div className="thumb" onClick={abrirDetalhes} style={{ cursor: "pointer" }}>
+      <div
+        className="thumb"
+        onClick={abrirDetalhes}
+        style={{ cursor: "pointer" }}
+      >
         {image ? <img src={image} alt={name} /> : <span>📦</span>}
       </div>
 
       <div className="body">
-        <Badge kind={kind} />
+        {/* Só mostra o Badge se houver tipo */}
+        {kind && <Badge kind={kind} />}
+
         <div className="name">{name}</div>
 
         <Button variant="neutral" size="sm" onClick={abrirDetalhes}>
