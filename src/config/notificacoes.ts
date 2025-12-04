@@ -1,4 +1,3 @@
-// src/config/notificacoes.ts 
 import { db } from "./firebase";
 import {
   collection,
@@ -11,31 +10,17 @@ import {
   doc
 } from "firebase/firestore";
 
-// ------------------------------------------------------
-// 1) Criar notificação de interesse (para o dono)
-// ------------------------------------------------------
-export async function criarNotificacao({
-  donoId,
-  interessadoId,
-  itemId,
-  itemTitulo,
-  resposta,
-}: any) {
+// Criar notificação de interesse
+export async function criarNotificacao(data: any) {
   return await addDoc(collection(db, "notificacoes"), {
-    tipo: "resposta",
-    donoId,                // quem enviou a resposta
-    interessadoId,         // quem deve receber
-    itemId,
-    itemTitulo,
-    resposta,              // "aceita" ou "recusada"
+    ...data,
+    tipo: "interesse",
+    status: "pendente",
     criadoEm: new Date(),
   });
 }
 
-
-// ------------------------------------------------------
-// 2) Listar notificações destinadas ao dono do item
-// ------------------------------------------------------
+// Listar notificações destinadas ao dono do item
 export async function listarNotificacoesDoUsuario(uid: string) {
   const q = query(
     collection(db, "notificacoes"),
@@ -47,34 +32,35 @@ export async function listarNotificacoesDoUsuario(uid: string) {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
-// ------------------------------------------------------
-// 3) Atualizar status da notificação (aceita / recusada)
-// ------------------------------------------------------
-export async function atualizarStatusNotificacao(
-  id: string,
-  status: "aceita" | "recusada"
-) {
+// Atualizar status
+export async function atualizarStatusNotificacao(id: string, status: string) {
   await updateDoc(doc(db, "notificacoes", id), { status });
 }
 
-// ------------------------------------------------------
-// 4) Criar notificação de resposta para o interessado
-// ------------------------------------------------------
+// Criar notificação de resposta SEM ERRO
 export async function criarNotificacaoResposta({
   donoId,
+  donoNome,
+  donoEmail,
+  donoTelefone,
   interessadoId,
   itemId,
   itemTitulo,
-  resposta = null,   // <--- EVITA UNDEFINED
+  resposta,
 }: any) {
+
+  if (!resposta) {
+    console.warn("⚠ criarNotificacaoResposta chamada sem 'resposta'. Definindo como 'indefinida'.");
+    resposta = "indefinida"; // evita undefined no Firestore
+  }
+
   return await addDoc(collection(db, "notificacoes"), {
     tipo: "resposta",
     donoId,
     interessadoId,
     itemId,
     itemTitulo,
-    resposta,           // agora pode ser null sem erro
+    resposta,
     criadoEm: new Date(),
   });
 }
-

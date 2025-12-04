@@ -7,6 +7,7 @@ import logo from "../assets/banner.png";
 import Button from "../componentes/ui/Button";
 import { getUsuario } from "../services/authService";
 import { criarNotificacao } from "../config/notificacoes";
+console.log(">>> getUsuario carregado:", getUsuario);
 
 export default function ItemDetalhes() {
   const { id } = useParams();
@@ -81,7 +82,6 @@ export default function ItemDetalhes() {
       interessadoNome: interessado?.nome || "Usuário",
       itemId: data.id,
       itemTitulo: data.titulo,
-      tipo: "troca",
       mensagem: `
 📦 Proposta de troca recebida!
 Usuário: ${interessado?.nome}
@@ -117,7 +117,6 @@ Mensagem: ${trocaMsg || "(sem mensagem)"}
       interessadoNome: interessado?.nome || "Usuário",
       itemId: data.id,
       itemTitulo: data.titulo,
-      tipo: "doacao",
       mensagem: `
 🎁 Interesse em doação!
 Nome: ${nomeInteressado}

@@ -53,10 +53,8 @@ export default function Perfil() {
 
       // ⭐ Aqui corrigimos o filtro
       const filtradas = notifs
-        .filter((n: any) =>
-          (n.tipo === "troca" || n.tipo === "doacao") &&
-          n.status === "pendente"
-        )
+        .filter((n: any) => n.tipo === "interesse" && n.status === "pendente")
+
         .map((n: any) => ({
           id: n.id,
           tipo: n.tipo,
@@ -64,6 +62,7 @@ export default function Perfil() {
           interessadoNome: n.interessadoNome,
           itemId: n.itemId,
           itemTitulo: n.itemTitulo,
+          mensagem: n.mensagem || "",
           criadoEm: n.criadoEm,
         }));
 
@@ -116,17 +115,23 @@ export default function Perfil() {
   async function aceitar(n: any) {
     try {
       await atualizarStatusNotificacao(n.id, "aceita");
+
       await marcarItemComoIndisponivel(n.itemId);
+
+      // 🔥 Buscar dados do dono (quem está logado)
+      const donoDados = await getUsuario(usuario.uid);
 
       await criarNotificacaoResposta({
         donoId: usuario.uid,
+        donoNome: donoDados?.nome,
+        donoEmail: donoDados?.email,
+        donoTelefone: donoDados?.telefone || "", // se houver
         interessadoId: n.interessadoId,
         itemId: n.itemId,
         itemTitulo: n.itemTitulo,
         resposta: "aceita",
       });
 
-      // Atualiza estado sem recarregar a página
       setNotificacoes(prev => prev.filter(x => x.id !== n.id));
       alert("Interesse aceito!");
 
@@ -143,8 +148,13 @@ export default function Perfil() {
     try {
       await atualizarStatusNotificacao(n.id, "recusada");
 
+      const donoDados = await getUsuario(usuario.uid);
+
       await criarNotificacaoResposta({
         donoId: usuario.uid,
+        donoNome: donoDados?.nome,
+        donoEmail: donoDados?.email,
+        donoTelefone: donoDados?.telefone || "", 
         interessadoId: n.interessadoId,
         itemId: n.itemId,
         itemTitulo: n.itemTitulo,
@@ -176,7 +186,7 @@ export default function Perfil() {
           <p className="pf-help">Atualize suas informações abaixo.</p>
 
           <form onSubmit={salvarPerfil} className="pf-form-fields">
-            
+
             <label>Nome Completo:
               <input
                 value={form.nome}
@@ -215,12 +225,19 @@ export default function Perfil() {
 
         {/* ---------- CARD DO USUÁRIO (inalterado) ---------- */}
         <section className="pf-user-card">
-          <div className="pf-avatar">{form.avatar}</div>
-          <div className="pf-user-info">
-            <div className="pf-name">{form.nome}</div>
-            <div className="pf-email">{form.email}</div>
-            <div className="pf-local">{form.local}</div>
+
+          <div className="pf-user">
+            <div className="pf-avatar">
+              <div className="pf-avatar-icon">{form.avatar}</div>
+            </div>
+
+            <div className="pf-user-info">
+              <div className="pf-name">{form.nome}</div>
+              <div className="pf-email">{form.email}</div>
+              <div className="pf-local">{form.local}</div>
+            </div>
           </div>
+
         </section>
 
         {/* ---------- NOTIFICAÇÕES (layout mantido) ---------- */}
@@ -237,7 +254,11 @@ export default function Perfil() {
                 <strong>{n.interessadoNome}</strong> demonstrou interesse em <strong>{n.itemTitulo}</strong>.
               </p>
               <small>{new Date(n.criadoEm.seconds * 1000).toLocaleString()}</small>
-
+              {n.mensagem && (
+                <div className="pf-mensagem">
+                  <pre>{n.mensagem}</pre>
+                </div>
+              )}
               <div className="pf-notif-actions">
                 <button className="pf-btn aceitar" onClick={() => aceitar(n)}>✔ Aceitar</button>
                 <button className="pf-btn recusar" onClick={() => recusar(n)}>✖ Recusar</button>

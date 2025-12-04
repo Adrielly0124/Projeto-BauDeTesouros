@@ -8,6 +8,7 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 import { Usuario } from "../models/Usuario";
 
 export async function registrarUsuario(data: {
+  telefone: string;
   tipo: "" | "responsavel" | "Instituicao";
   nome: string;
   email: string;
@@ -24,7 +25,8 @@ export async function registrarUsuario(data: {
     nome: data.nome,
     email: data.email,
     cpf: data.cpf,
-    avatar: data.avatar,           // ← salva avatar selecionado
+    avatar: data.avatar,  
+    telefone: data.telefone || "",
     criadoEm: new Date().toISOString(),
   };
 
@@ -43,3 +45,4 @@ export async function getUsuario(uid: string): Promise<Usuario | null> {
   const snap = await getDoc(ref);
   return snap.exists() ? (snap.data() as Usuario) : null;
 }
+

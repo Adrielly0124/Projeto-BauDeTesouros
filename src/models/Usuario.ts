@@ -4,7 +4,8 @@ export interface Usuario {
   nome: string;                   // nome completo
   email: string;                  // usado para login
   cpf: string; 
-  avatar?: string;   // <--- ADICIONE ISTO
+  avatar?: string;
+  telefone?: string,
   local?: string;               // CPF ou CNPJ em um único campo
   criadoEm: string;               // timestamp para auditoria
 }
