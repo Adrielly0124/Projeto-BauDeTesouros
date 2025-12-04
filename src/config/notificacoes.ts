@@ -22,14 +22,29 @@ export async function criarNotificacao(data: any) {
 
 // Listar notificações destinadas ao dono do item
 export async function listarNotificacoesDoUsuario(uid: string) {
-  const q = query(
-    collection(db, "notificacoes"),
-    where("donoId", "==", uid),
-    orderBy("criadoEm", "desc")
-  );
+  const ref = collection(db, "notificacoes");
 
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  // Notificações onde o usuário é DONO do item
+  const q1 = query(ref, where("donoId", "==", uid));
+
+  // Notificações onde o usuário é o INTERESSADO
+  const q2 = query(ref, where("interessadoId", "==", uid));
+
+  const [snap1, snap2] = await Promise.all([getDocs(q1), getDocs(q2)]);
+
+  const lista: any[] = [
+    ...snap1.docs.map((d) => ({ id: d.id, ...d.data() })),
+    ...snap2.docs.map((d) => ({ id: d.id, ...d.data() })),
+  ];
+
+  // Ordenar do mais novo para o mais antigo
+  lista.sort((a, b) => {
+    const t1 = a.criadoEm?.seconds || 0;
+    const t2 = b.criadoEm?.seconds || 0;
+    return t2 - t1;
+  });
+
+  return lista;
 }
 
 // Atualizar status

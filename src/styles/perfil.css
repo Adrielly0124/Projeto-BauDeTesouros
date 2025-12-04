@@ -133,34 +133,48 @@
   font-size: 18px;
   font-weight: 800;
 }
-.pf-products{
-  display:grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+/* === ITENS CADASTRADOS (3 por linha) === */
+.pf-products {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 3 por linha */
+  gap: 20px;
+  padding: 10px;
 }
-/* CARD INDIVIDUAL DOS ITENS */
+
+/* Card menor e mais elegante */
 .pf-prod-card {
-  background: #ffffff;             /* fundo branco */
-  border: 2px solid #f2c76e;       /* borda amarelo suave */
-  border-radius: 12px;             /* cantos arredondados */
+  background: #ffffff;
+  border: 2px solid #f2c76e;
+  border-radius: 14px;
   padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.10); /* sombra leve */
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 220px; /* deixa todos iguais */
 }
 
-/* Efeito hover — opcional */
 .pf-prod-card:hover {
-  transform: scale(1.02);
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+  transform: scale(1.03);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.18);
 }
 
-.pf-prod-thumb{
-  height: 160px; background:#f3f6fa; display:flex; align-items:center; justify-content:center;
-  font-size: 46px;
+.pf-prod-thumb {
+  height: 110px;
+  background: #f9fafc;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.pf-prod-thumb img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
 .pf-prod-body{
   padding: 10px; text-align:center;
 }
@@ -239,4 +253,107 @@
   border-color: #e79a2f;
   background: #fff0d3;
   box-shadow: 0 0 4px #e79a2f;
+}
+
+@media (max-width: 1100px) {
+  .pf-products {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .pf-products {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==== NOTIFICAÇÕES ==== */
+
+.pf-notif-card {
+  background: #fff8e3;
+  border: 2px solid #ffcf66;
+  padding: 14px;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  color: #5a3a00;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.pf-notif-card strong {
+  color: #3b2500;
+  font-size: 15px;
+}
+
+.pf-notif-meta {
+  margin-top: 6px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* Detalhes do texto */
+.pf-notif-details {
+  background: #fff4d1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-top: 8px;
+  border-left: 4px solid #ffb300;
+  white-space: pre-line;
+  font-size: 13px;
+}
+
+/* Botões de ação */
+.pf-notif-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+}
+
+.pf-btn.aceitar {
+  background: #4caf50;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 0 #2e7d32;
+  border: none;
+}
+
+.pf-btn.recusar {
+  background: #e53935;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 0 #ab000d;
+  border: none;
+}
+
+.pf-btn.aceitar:hover {
+  background: #3c8c41;
+}
+
+.pf-btn.recusar:hover {
+  background: #c62828;
+}
+
+.pf-wrapper {
+  display: grid;
+  grid-template-columns: 520px 1fr;
+  gap: 30px;
+  align-items: start;   /* evita esticar */
+}
+
+.pf-profile {
+  margin-bottom: 0 !important;
+}
+
+.pf-notifs-section {
+  margin-top: 10px !important; /* reduz espaço */
+}
+
+.pf-items-section {
+  margin-top: 20px !important;
 }
