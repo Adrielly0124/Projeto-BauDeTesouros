@@ -65,12 +65,14 @@ export async function listarMeusItens() {
  * ordenados pelo mais recente
  */
 export async function listarTodosItens() {
-  const q = query(collection(db, "itens"), orderBy("criadoEm", "desc"));
+  const q = query(
+    collection(db, "itens"),
+    where("disponivel", "==", true)   // 🔥 só itens visíveis
+  );
 
   const snap = await getDocs(q);
-  return snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
-
 /**
  * 🔍 Busca simples por título
  */
@@ -87,11 +89,9 @@ export async function buscarItens(texto: string) {
  * 3️⃣ Marcar item como indisponível
  * Chamado quando o dono aceita a troca/doação
  */
-export async function marcarItemComoIndisponivel(itemId: string) {
-  const ref = doc(db, "itens", itemId);
 
-  await updateDoc(ref, {
-    disponivel: false,   // 🔥 Marca que não está mais disponível
-    atualizadoEm: new Date(),
+export async function marcarItemComoIndisponivel(itemId: string) {
+  await updateDoc(doc(db, "itens", itemId), {
+    disponivel: false
   });
 }

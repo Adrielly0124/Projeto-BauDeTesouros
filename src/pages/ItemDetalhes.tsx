@@ -7,7 +7,6 @@ import logo from "../assets/banner.png";
 import Button from "../componentes/ui/Button";
 import { getUsuario } from "../services/authService";
 import { criarNotificacao } from "../config/notificacoes";
-console.log(">>> getUsuario carregado:", getUsuario);
 
 export default function ItemDetalhes() {
   const { id } = useParams();
@@ -16,16 +15,18 @@ export default function ItemDetalhes() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // Estados — TROCA
+  // ------------------ ESTADOS TROCA ------------------
   const [abrirTroca, setAbrirTroca] = useState(false);
   const [meuItem, setMeuItem] = useState("");
   const [trocaMsg, setTrocaMsg] = useState("");
+  const [telefoneTroca, setTelefoneTroca] = useState("");
 
-  // Estados — DOAÇÃO
+  // ------------------ ESTADOS DOAÇÃO -----------------
   const [abrirDoacao, setAbrirDoacao] = useState(false);
   const [nomeInteressado, setNomeInteressado] = useState("");
   const [motivo, setMotivo] = useState("");
   const [mensagemD, setMensagemD] = useState("");
+  const [telefoneDoacao, setTelefoneDoacao] = useState("");
 
   // ---------------- CARREGAR ITEM ----------------
   useEffect(() => {
@@ -50,19 +51,14 @@ export default function ItemDetalhes() {
     carregar();
   }, [id, nav]);
 
-  // ------------------------------------------------
-  // 🔥 FUNÇÃO AUXILIAR PARA PEGAR O DONO DO ITEM
-  // ------------------------------------------------
   function getDonoId() {
     const donoId = data?.usuarioId;
-    if (!donoId) {
-      console.error("ERRO: item sem usuarioId no Firestore:", data);
-      alert("Erro: item sem dono no banco.");
-    }
     return donoId;
   }
 
-  // ---------------- ENVIAR NOTIFICAÇÃO TROCA ----------------
+  // ==================================================================
+  // 🔄 ENVIAR PROPOSTA DE TROCA
+  // ==================================================================
   async function enviarTroca() {
     if (!auth.currentUser) {
       alert("Você precisa estar logado para enviar uma proposta.");
@@ -70,41 +66,7 @@ export default function ItemDetalhes() {
     }
 
     if (!meuItem.trim()) return alert("Informe qual item deseja trocar.");
-
-    const donoId = getDonoId();
-    if (!donoId) return; // evita crash
-
-    const interessado = await getUsuario(auth.currentUser.uid);
-
-    await criarNotificacao({
-      donoId,
-      interessadoId: auth.currentUser.uid,
-      interessadoNome: interessado?.nome || "Usuário",
-      itemId: data.id,
-      itemTitulo: data.titulo,
-      mensagem: `
-📦 Proposta de troca recebida!
-Usuário: ${interessado?.nome}
-Item oferecido: ${meuItem}
-Mensagem: ${trocaMsg || "(sem mensagem)"}
-      `.trim(),
-    });
-
-    alert("Proposta enviada ao responsável!");
-    setAbrirTroca(false);
-    setMeuItem("");
-    setTrocaMsg("");
-  }
-
-  // ---------------- ENVIAR NOTIFICAÇÃO DOAÇÃO ----------------
-  async function enviarDoacao() {
-    if (!auth.currentUser) {
-      alert("Você precisa estar logado para demonstrar interesse.");
-      return;
-    }
-
-    if (!nomeInteressado.trim()) return alert("Informe seu nome.");
-    if (!motivo.trim()) return alert("Explique o motivo.");
+    if (!telefoneTroca.trim()) return alert("Informe um telefone para contato.");
 
     const donoId = getDonoId();
     if (!donoId) return;
@@ -115,21 +77,79 @@ Mensagem: ${trocaMsg || "(sem mensagem)"}
       donoId,
       interessadoId: auth.currentUser.uid,
       interessadoNome: interessado?.nome || "Usuário",
+
       itemId: data.id,
       itemTitulo: data.titulo,
+
+      mensagem: `
+📦 Proposta de troca recebida!
+
+Usuário: ${interessado?.nome}
+Telefone: ${telefoneTroca}
+
+Item oferecido:
+${meuItem}
+
+Mensagem adicional:
+${trocaMsg || "(sem mensagem)"}
+      `.trim(),
+    });
+
+    alert("Proposta enviada ao responsável!");
+
+    setAbrirTroca(false);
+    setMeuItem("");
+    setTrocaMsg("");
+    setTelefoneTroca("");
+  }
+
+  // ==================================================================
+  // 🎁 ENVIAR INTERESSE EM DOAÇÃO
+  // ==================================================================
+  async function enviarDoacao() {
+    if (!auth.currentUser) {
+      alert("Você precisa estar logado para demonstrar interesse.");
+      return;
+    }
+
+    if (!nomeInteressado.trim()) return alert("Informe seu nome.");
+    if (!motivo.trim()) return alert("Explique o motivo.");
+    if (!telefoneDoacao.trim()) return alert("Informe um telefone para contato.");
+
+    const donoId = getDonoId();
+    if (!donoId) return;
+
+    const interessado = await getUsuario(auth.currentUser.uid);
+
+    await criarNotificacao({
+      donoId,
+      interessadoId: auth.currentUser.uid,
+      interessadoNome: interessado?.nome || "Usuário",
+
+      itemId: data.id,
+      itemTitulo: data.titulo,
+
       mensagem: `
 🎁 Interesse em doação!
+
 Nome: ${nomeInteressado}
-Motivo: ${motivo}
-Mensagem adicional: ${mensagemD || "(nenhuma)"}
+Telefone: ${telefoneDoacao}
+
+Motivo:
+${motivo}
+
+Mensagem adicional:
+${mensagemD || "(nenhuma)"}
       `.trim(),
     });
 
     alert("Interesse enviado ao responsável!");
+
     setAbrirDoacao(false);
     setNomeInteressado("");
     setMotivo("");
     setMensagemD("");
+    setTelefoneDoacao("");
   }
 
   if (loading) return <p className="loading">Carregando item...</p>;
@@ -140,17 +160,13 @@ Mensagem adicional: ${mensagemD || "(nenhuma)"}
       {/* Banner */}
       <section className="bt-banner">
         <div className="illus">
-          <img
-            src={logo}
-            alt="Baú de Tesouros"
-            style={{ width: "100%", maxWidth: "1000px" }}
-          />
+          <img src={logo} alt="Baú de Tesouros" style={{ width: "100%", maxWidth: "1000px" }} />
         </div>
       </section>
 
       <div className="det-container">
 
-        {/* ------- Imagens ------- */}
+        {/* Imagens */}
         <div className="det-imagens">
           {data.imagens?.length > 0 ? (
             data.imagens.map((url: string, i: number) => (
@@ -161,31 +177,25 @@ Mensagem adicional: ${mensagemD || "(nenhuma)"}
           )}
         </div>
 
-        {/* ------- Informações ------- */}
+        {/* Informações */}
         <div className="det-info">
-
           <h2>{data.titulo}</h2>
 
-          {data.tipo === "venda" && data.preco != null && (
+          {data.tipo === "venda" && (
             <p className="det-preco">R$ {Number(data.preco).toFixed(2)}</p>
           )}
 
           <p><strong>Descrição:</strong> {data.descricao}</p>
           <p><strong>Condição:</strong> {data.condicao}</p>
 
-          {data.faixaEtaria && (
-            <p><strong>Faixa etária:</strong> {data.faixaEtaria}</p>
-          )}
+          {data.faixaEtaria && <p><strong>Faixa etária:</strong> {data.faixaEtaria}</p>}
 
           <p><strong>Localização:</strong> {data.local}</p>
           <p><strong>Categoria:</strong> {data.tipo?.toUpperCase()}</p>
 
-          {/* ------- Botões ------- */}
+          {/* Botões */}
           <div className="det-btns">
-
-            <Button variant="neutral" onClick={() => nav(-1)}>
-              ← Voltar
-            </Button>
+            <Button variant="neutral" onClick={() => nav(-1)}>← Voltar</Button>
 
             {data.tipo === "troca" && (
               <Button variant="success" onClick={() => setAbrirTroca(v => !v)}>
@@ -200,16 +210,26 @@ Mensagem adicional: ${mensagemD || "(nenhuma)"}
             )}
           </div>
 
-          {/* ------- FORMULÁRIO TROCA ------- */}
+          {/* FORMULÁRIO TROCA */}
           {abrirTroca && (
             <div className="troca-form">
               <h3>Propor troca</h3>
 
               <label>
+                Seu telefone:
+                <input
+                  type="text"
+                  placeholder="(DDD) 99999-9999"
+                  value={telefoneTroca}
+                  onChange={(e) => setTelefoneTroca(e.target.value)}
+                />
+              </label>
+
+              <label>
                 Item que você oferece:
                 <input
                   type="text"
-                  placeholder="Ex: Motoca azul em bom estado"
+                  placeholder="Ex: Motoca azul"
                   value={meuItem}
                   onChange={(e) => setMeuItem(e.target.value)}
                 />
@@ -225,18 +245,13 @@ Mensagem adicional: ${mensagemD || "(nenhuma)"}
               </label>
 
               <div className="troca-buttons">
-                <Button variant="primary" onClick={enviarTroca}>
-                  Enviar Proposta
-                </Button>
-
-                <Button variant="neutral" onClick={() => setAbrirTroca(false)}>
-                  Cancelar
-                </Button>
+                <Button variant="primary" onClick={enviarTroca}>Enviar Proposta</Button>
+                <Button variant="neutral" onClick={() => setAbrirTroca(false)}>Cancelar</Button>
               </div>
             </div>
           )}
 
-          {/* ------- FORMULÁRIO DOAÇÃO ------- */}
+          {/* FORMULÁRIO DOAÇÃO */}
           {abrirDoacao && (
             <div className="doacao-form">
               <h3>Demonstrar interesse</h3>
@@ -247,7 +262,16 @@ Mensagem adicional: ${mensagemD || "(nenhuma)"}
                   type="text"
                   value={nomeInteressado}
                   onChange={(e) => setNomeInteressado(e.target.value)}
-                  placeholder="Digite seu nome"
+                />
+              </label>
+
+              <label>
+                Seu telefone:
+                <input
+                  type="text"
+                  placeholder="(DDD) 99999-9999"
+                  value={telefoneDoacao}
+                  onChange={(e) => setTelefoneDoacao(e.target.value)}
                 />
               </label>
 
@@ -256,27 +280,20 @@ Mensagem adicional: ${mensagemD || "(nenhuma)"}
                 <textarea
                   value={motivo}
                   onChange={(e) => setMotivo(e.target.value)}
-                  placeholder="Explique o motivo..."
                 />
               </label>
 
               <label>
-                Mensagem adicional (opcional):
+                Mensagem adicional:
                 <textarea
                   value={mensagemD}
                   onChange={(e) => setMensagemD(e.target.value)}
-                  placeholder="Escreva sua mensagem..."
                 />
               </label>
 
               <div className="doacao-buttons">
-                <Button variant="primary" onClick={enviarDoacao}>
-                  Enviar Interesse
-                </Button>
-
-                <Button variant="neutral" onClick={() => setAbrirDoacao(false)}>
-                  Cancelar
-                </Button>
+                <Button variant="primary" onClick={enviarDoacao}>Enviar Interesse</Button>
+                <Button variant="neutral" onClick={() => setAbrirDoacao(false)}>Cancelar</Button>
               </div>
             </div>
           )}
