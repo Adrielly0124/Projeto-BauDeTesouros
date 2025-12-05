@@ -98,3 +98,98 @@
   border: 2px solid #ccc;
   margin-top: 6px;
 }
+
+/* FORMULÁRIO DE COMPRA */
+.compra-form {
+  background: #ffaac4;
+  border: 2px solid #ff6c98;
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.compra-form h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #000000;
+}
+
+/* GRID DOS CAMPOS */
+/* Campos empilhados (nome, pagamento, telefone) */
+.compra-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+
+.compra-form label {
+  font-weight: 700;
+  color: #000000;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.compra-form input,
+.compra-form select,
+.compra-form textarea {
+  border: 2px solid #ff6c98;
+  background: #faeaf6;
+  padding: 8px 10px;
+  border-radius: 10px;
+  outline: none;
+  font-size: 14px;
+}
+
+.compra-form input:focus,
+.compra-form select:focus,
+.compra-form textarea:focus {
+  border-color: #ff6c98;
+  box-shadow: 0 0 0 3px #00000033;
+}
+
+.compra-form textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+/* BOTÕES */
+.compra-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.compra-buttons .btn-primary {
+  background: #3b82f6;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+}
+
+.compra-buttons .btn-primary:hover {
+  background: #2563eb;
+}
+
+.compra-buttons .btn-neutral {
+  background: #e5e5e5;
+  color: #333;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+}
+
+.compra-buttons .btn-neutral:hover {
+  background: #d4d4d4;
+}

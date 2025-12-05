@@ -114,26 +114,30 @@ export default function Perfil() {
   // ---------------------------------------------------------
   async function aceitar(n: any) {
     try {
+      // 1) Atualiza status da notificação original
       await atualizarStatusNotificacao(n.id, "aceita");
 
-      await marcarItemComoIndisponivel(n.itemId);
+      // 2) Excluir definitivamente o item do Firestore
+      await deleteDoc(doc(db, "itens", n.itemId));
 
-      // 🔥 Buscar dados do dono (quem está logado)
+      // 3) Enviar notificação ao interessado
       const donoDados = await getUsuario(usuario.uid);
 
       await criarNotificacaoResposta({
         donoId: usuario.uid,
         donoNome: donoDados?.nome,
         donoEmail: donoDados?.email,
-        donoTelefone: donoDados?.telefone || "", // se houver
+        donoTelefone: donoDados?.telefone || "",
         interessadoId: n.interessadoId,
         itemId: n.itemId,
         itemTitulo: n.itemTitulo,
         resposta: "aceita",
       });
 
+      // 4) Remover a notificação da tela
       setNotificacoes(prev => prev.filter(x => x.id !== n.id));
-      alert("Interesse aceito!");
+
+      alert("Interesse aceito! O item foi removido do sistema.");
 
     } catch (err) {
       console.error(err);
@@ -154,7 +158,7 @@ export default function Perfil() {
         donoId: usuario.uid,
         donoNome: donoDados?.nome,
         donoEmail: donoDados?.email,
-        donoTelefone: donoDados?.telefone || "", 
+        donoTelefone: donoDados?.telefone || "",
         interessadoId: n.interessadoId,
         itemId: n.itemId,
         itemTitulo: n.itemTitulo,

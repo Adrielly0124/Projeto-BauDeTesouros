@@ -14,12 +14,14 @@ export default function Home() {
       try {
         const todos = await listarTodosItens();
 
-        const mapped = todos.map((it: any) => ({
-          id: it.id,
-          name: it.titulo,
-          kind: it.tipo,
-          image: it.imagens?.[0] || ""
-        }));
+        const mapped = todos
+          .filter((it: any) => it.status !== "indisponivel") // ← FILTRO ADICIONADO
+          .map((it: any) => ({
+            id: it.id,
+            name: it.titulo,
+            kind: it.tipo,
+            image: it.imagens?.[0] || "",
+          }));
 
         setItens(mapped);
 
@@ -82,7 +84,7 @@ export default function Home() {
                   key={it.id}
                   id={it.id}
                   name={it.name}
-                  kind={it.kind ?? ""}   // ← evita o erro
+                  kind={it.kind ?? ""} // ← evita erro se vier undefined
                   image={it.image}
                 />
               ))}

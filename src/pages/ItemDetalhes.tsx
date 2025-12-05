@@ -28,6 +28,14 @@ export default function ItemDetalhes() {
   const [mensagemD, setMensagemD] = useState("");
   const [telefoneDoacao, setTelefoneDoacao] = useState("");
 
+  // Estados — VENDA
+  const [abrirCompra, setAbrirCompra] = useState(false);
+  const [nomeCompra, setNomeCompra] = useState("");
+  const [pagamento, setPagamento] = useState("");
+  const [telefoneCompra, setTelefoneCompra] = useState("");
+  const [mensagemCompra, setMensagemCompra] = useState("");
+
+
   // ---------------- CARREGAR ITEM ----------------
   useEffect(() => {
     async function carregar() {
@@ -154,6 +162,44 @@ ${mensagemD || "(nenhuma)"}
 
   if (loading) return <p className="loading">Carregando item...</p>;
   if (!data) return null;
+  async function enviarCompra() {
+    if (!auth.currentUser) {
+      alert("Você precisa estar logado para realizar uma compra.");
+      return;
+    }
+
+    if (!nomeCompra.trim()) return alert("Informe seu nome.");
+    if (!pagamento.trim()) return alert("Informe a forma de pagamento.");
+    if (!telefoneCompra.trim()) return alert("Informe seu telefone.");
+
+    const donoId = getDonoId();
+    if (!donoId) return;
+
+    const interessado = await getUsuario(auth.currentUser.uid);
+
+    await criarNotificacao({
+      donoId,
+      interessadoId: auth.currentUser.uid,
+      interessadoNome: interessado?.nome || "Usuário",
+      itemId: data.id,
+      itemTitulo: data.titulo,
+      tipo: "compra",
+      mensagem: `
+🛒 Pedido de compra!
+Nome: ${nomeCompra}
+Forma de pagamento: ${pagamento}
+Telefone: ${telefoneCompra}
+Mensagem adicional: ${mensagemCompra || "(nenhuma)"}
+    `.trim(),
+    });
+
+    alert("Pedido enviado ao vendedor!");
+    setAbrirCompra(false);
+    setNomeCompra("");
+    setPagamento("");
+    setTelefoneCompra("");
+    setMensagemCompra("");
+  }
 
   return (
     <>
@@ -208,6 +254,13 @@ ${mensagemD || "(nenhuma)"}
                 🎁 Quero receber esta doação
               </Button>
             )}
+            {data.tipo === "venda" && (
+              <Button variant="success" onClick={() => setAbrirCompra(v => !v)}>
+                🛒 Comprar
+              </Button>
+            )}
+
+
           </div>
 
           {/* FORMULÁRIO TROCA */}
@@ -294,6 +347,68 @@ ${mensagemD || "(nenhuma)"}
               <div className="doacao-buttons">
                 <Button variant="primary" onClick={enviarDoacao}>Enviar Interesse</Button>
                 <Button variant="neutral" onClick={() => setAbrirDoacao(false)}>Cancelar</Button>
+              </div>
+            </div>
+          )}
+          {/* ------- FORMULÁRIO DE COMPRA ------- */}
+          {abrirCompra && (
+            <div className="compra-form">
+              <h3>Finalizar Compra</h3>
+
+              <div className="compra-grid">
+                <label>
+                  Seu nome:
+                  <input
+                    type="text"
+                    value={nomeCompra}
+                    onChange={(e) => setNomeCompra(e.target.value)}
+                    placeholder="Digite seu nome"
+                  />
+                </label>
+
+                <label>
+                  Forma de pagamento:
+                </label>
+                <select
+                  className="compra-select"
+                  value={pagamento}
+                  onChange={(e) => setPagamento(e.target.value)}
+                >
+                  <option value="">Selecione…</option>
+                  <option value="Pix">Pix</option>
+                  <option value="Dinheiro">Dinheiro</option>
+                  <option value="Cartão">Cartão</option>
+                  <option value="Transferência bancária">Transferência bancária</option>
+                </select>
+
+                <label>
+                  Telefone:
+                  <input
+                    type="text"
+                    value={telefoneCompra}
+                    onChange={(e) => setTelefoneCompra(e.target.value)}
+                    placeholder="(DDD) 00000-0000"
+                  />
+                </label>
+              </div>
+
+              <label>
+                Mensagem adicional (opcional):
+                <textarea
+                  value={mensagemCompra}
+                  onChange={(e) => setMensagemCompra(e.target.value)}
+                  placeholder="Escreva uma mensagem..."
+                />
+              </label>
+
+              <div className="compra-buttons">
+                <button className="btn-primary" onClick={enviarCompra}>
+                  Finalizar Compra
+                </button>
+
+                <button className="btn-neutral" onClick={() => setAbrirCompra(false)}>
+                  Cancelar
+                </button>
               </div>
             </div>
           )}
