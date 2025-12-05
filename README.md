@@ -1,5 +1,5 @@
 # Bau de Tesouros PSOF
-Este projeto é uma aplicação web utilizando o padrão MVC (Model-View-Controller) com foco em manipulação do DOM no JavaScript.
+Este projeto é uma aplicação web utilizando o padrão MVC (Model-View-Controller) com foco em manipulação no ReactNext-JS
 # Plataforma Baú de Tesouros  
 
 ### Projeto de Software – Desenvolvimento de Sistemas  
