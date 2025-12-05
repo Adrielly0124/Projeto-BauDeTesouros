@@ -61,3 +61,29 @@ html, body, #root {
 .read-the-docs {
   color: #888;
 }
+.bt-navbtn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notif-badge {
+  position: absolute;
+  top: -4px;      /* sobe a bolinha */
+  right: -4px;    /* joga para o canto */
+  background: #ff4b4b;
+  color: white;
+  font-size: 9px;   /* 🔥 menorzinho */
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 999px;
+  min-width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 20;
+}
+
