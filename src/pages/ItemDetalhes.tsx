@@ -11,7 +11,7 @@ import { criarNotificacao } from "../config/notificacoes";
 export default function ItemDetalhes() {
   const { id } = useParams();
   const nav = useNavigate();
-
+  const [dono, setDono] = useState<any>(null);
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -48,7 +48,15 @@ export default function ItemDetalhes() {
           return nav(-1);
         }
 
-        setData({ id: snap.id, ...snap.data() });
+        const itemDados = { id: snap.id, ...snap.data() } as any;
+        setData(itemDados);
+
+        // 🔥 Buscar informações do dono do item
+        if (itemDados.usuarioId) {
+          const userData = await getUsuario(itemDados.usuarioId);
+          setDono(userData);
+        }
+
       } catch (error) {
         console.error("Erro ao carregar item:", error);
       } finally {
@@ -58,6 +66,7 @@ export default function ItemDetalhes() {
 
     carregar();
   }, [id, nav]);
+
 
   function getDonoId() {
     const donoId = data?.usuarioId;
@@ -233,7 +242,9 @@ Mensagem adicional: ${mensagemCompra || "(nenhuma)"}
 
           <p><strong>Descrição:</strong> {data.descricao}</p>
           <p><strong>Condição:</strong> {data.condicao}</p>
-
+          {dono && (
+            <p><strong>Anunciado por:</strong> {dono.nome}</p>
+          )}
           {data.faixaEtaria && <p><strong>Faixa etária:</strong> {data.faixaEtaria}</p>}
 
           <p><strong>Localização:</strong> {data.local}</p>

@@ -15,13 +15,15 @@ export default function Home() {
         const todos = await listarTodosItens();
 
         const mapped = todos
-          .filter((it: any) => it.status !== "indisponivel") // ← FILTRO ADICIONADO
+          .filter((it: any) => it.status !== "indisponivel")
+          .sort((a: any, b: any) => (b.criadoEm?.seconds || 0) - (a.criadoEm?.seconds || 0))
           .map((it: any) => ({
             id: it.id,
             name: it.titulo,
             kind: it.tipo,
             image: it.imagens?.[0] || "",
           }));
+
 
         setItens(mapped);
 
