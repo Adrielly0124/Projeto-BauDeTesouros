@@ -1,5 +1,5 @@
 # Bau de Tesouros PSOF
-Este projeto é uma aplicação web utilizando o padrão MVC (Model-View-Controller) com foco em manipulação do DOM no JavaScript.
+Este projeto é uma aplicação web utilizando o padrão MVC (Model-View-Controller) com foco em manipulação no ReactNext-JS
 # Plataforma Baú de Tesouros  
 
 ### Projeto de Software – Desenvolvimento de Sistemas  
@@ -30,7 +30,7 @@ Além de facilitar o reaproveitamento, a plataforma possui um caráter **educati
 
 ## 3. Estrutura do Site e Ferramentas Utilizadas  
 
-O sistema será desenvolvido como uma aplicação **web responsiva**, empregando a manipulação dinâmica da interface via **método DOM (Document Object Model)**.  
+O sistema será desenvolvido como uma aplicação **web responsiva**, empregando a manipulação dinâmica da interface via **Tecnologia ReactNext-JS**.  
 
 ### 3.1 Tecnologias e Ferramentas  
 - **Frontend:** HTML5, CSS3 e JavaScript (manipulação DOM)  
