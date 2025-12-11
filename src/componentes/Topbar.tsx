@@ -41,19 +41,24 @@ export default function Topbar() {
       <div className="bt-topbar-right">
 
         {user ? (
-          <>
-            <div className="user-info">
-              <strong>{user.nome}</strong>
-              <span>{user.email}</span>
-            </div>
+  <>
+    <div className="user-info">
+      <strong>{user.nome}</strong>
+      <span>{user.email}</span>
+    </div>
 
-            <button className="logout-btn" onClick={handleLogout}>
-              Sair
-            </button>
-          </>
-        ) : (
-          <span className="user-info">Não logado</span>
-        )}
+    <button className="logout-btn" onClick={handleLogout}>
+      Sair
+    </button>
+  </>
+) : (
+  <>
+    <span className="user-info">Não logado</span>
+    <button className="login-btn" onClick={() => window.location.href = "/login"}>
+      Entrar
+    </button>
+  </>
+)}
       </div>
     </header>
   );

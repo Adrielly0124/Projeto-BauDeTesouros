@@ -1,0 +1,29 @@
+/* Layout em colunas (TopBar em cima) */
+.bt-layout-column {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Linha abaixo da topbar */
+.bt-layout-row {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 70px); /* altura da topbar */
+}
+
+/* Sidebar lateral */
+.bt-layout-row > aside {
+  width: 90px;
+  height: 100%;
+}
+
+/* Conteúdo da página */
+.bt-page-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: #fafafa;
+}
